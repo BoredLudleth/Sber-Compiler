@@ -1,1 +1,3 @@
-Int64_t position = iF true then initial + rate * 60 else 0
+Int64_t position = iF true then initial + rate *  /* что вершит /* судьбу человечества*/ незримый закон?*/60 else 0
+--jojobizare
+"allongelo"

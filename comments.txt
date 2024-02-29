@@ -1,8 +1,5 @@
-/*special symbols () {} +-/* = 
-strings without EOF and /0, but can have /n -> use ^/0
-comments starts from --end \n or EOF
+/*
 comments (...)
-comments /* */ can be one in one */
 
 guide how to compile :
 flex flex.l
@@ -10,10 +7,11 @@ g++ lex.yy.c
 ./a.out test.txt
 
 todo:
-cmake
 repair bug with KEYWORD
-commit it
 make STRING ["][^<<EOF>>\0 ]["]
 make file with define if|If|iF
-do it with script
+
+question:
+why i need (. . .) comments?
+how to catch EOF? if i use yyinput i get \0 at the end of file
 
