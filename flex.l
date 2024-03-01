@@ -4,11 +4,23 @@
 #include <stdio.h>
 %}
 
-DIGIT    [0-9]
+DIGIT         [0-9]
 
 TYPE_ID       [A-Z][A-Za-z0-9_]*
 VAR           [a-z][A-Za-z0-9_]*
 STRING        ["][^\0]*["]
+
+ELSE          [Ee][Ll][Ss][Ee]
+IF            [Ii][Ff]
+LOOP          [Ll][Oo][Oo][Pp]
+THEN          [Tt][Hh][Ee][Nn]
+WHILE         [Ww][Hh][Ii][Ll][Ee]
+NOT           [Nn][Oo][Tt]
+PRINT         [Pp][Rr][Ii][Nn][Tt]
+PRINTLN       [Pp][Rr][Ii][Nn][Tt][Ll][Nn]
+
+TRUE          [t][Rr][Uu][Ee]
+FALSE         [f][Aa][Ll][Ss][Ee]
 
 %%
 {STRING}                                            {
@@ -23,7 +35,7 @@ STRING        ["][^\0]*["]
     printf ("Token class: FLOAT, Token value: %s\n", yytext);
 }
 
-else|false|if|loop|then|while|not|true|print|printl {
+{ELSE}|{FALSE}|{IF}|{LOOP}|{THEN}|{WHILE}|{NOT}|{TRUE}|{PRINT}|{PRINTLN} {
     printf ("Token class: KEYWORD, Token value: %s\n", yytext);
 }
 

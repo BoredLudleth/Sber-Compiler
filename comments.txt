@@ -7,11 +7,4 @@ g++ lex.yy.c
 ./a.out test.txt
 
 todo:
-repair bug with KEYWORD
-make STRING ["][^<<EOF>>\0 ]["]
-make file with define if|If|iF
-
-question:
-why i need (. . .) comments?
-how to catch EOF? if i use yyinput i get \0 at the end of file
-
+solve problem with STRING ---> <<EOF>>
