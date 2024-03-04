@@ -1,14 +1,14 @@
 %option noyywrap
 
 %{
-#include <stdio.h>
+#include <iostream>
 %}
 
 DIGIT         [0-9]
 
 TYPE_ID       [A-Z][A-Za-z0-9_]*
 VAR           [a-z][A-Za-z0-9_]*
-STRING        ["][^\0]*["]
+STRING        ["][^\0"<<EOF>>]*["]
 
 ELSE          [Ee][Ll][Ss][Ee]
 IF            [Ii][Ff]
@@ -24,44 +24,45 @@ FALSE         [f][Aa][Ll][Ss][Ee]
 
 %%
 {STRING}                                            {
-    printf ("Token class: STRING, Token value: %s\n", yytext);
+    std::cout << "Token class: STRING, Token value: " << yytext << std::endl;
 }
 
 {DIGIT}+                                            {
-    printf ("Token class: DIGIT, Token value: %s\n", yytext);
+    std::cout << "Token class: DIGIT, Token value: " << yytext << std::endl;
 }
 
 {DIGIT}+"."{DIGIT}*                                 {
-    printf ("Token class: FLOAT, Token value: %s\n", yytext);
+    std::cout << "Token class: FLOAT, Token value: " << yytext << std::endl;
 }
 
 {ELSE}|{FALSE}|{IF}|{LOOP}|{THEN}|{WHILE}|{NOT}|{TRUE}|{PRINT}|{PRINTLN} {
-    printf ("Token class: KEYWORD, Token value: %s\n", yytext);
+    std::cout << "Token class: KEYWORD, Token value: " << yytext << std::endl;
 }
 
 "("|")"|"{"|"}"|"+"|"-"|"/"|"*"|"="                 {
-    printf ("Token class: SPEC_SYM, Token value: %s\n", yytext);
+    std::cout << "Token class: SPEC_SYM, Token value: " << yytext << std::endl;
 }
 
 
 {TYPE_ID}                                           {
-    printf ("Token class: TYPE_ID, Token value: %s\n", yytext);
+    std::cout << "Token class: TYPE_ID, Token value: " << yytext << std::endl;
 }
 
 {VAR}                                               {
-    printf ("Token class: VAR, Token value: %s\n", yytext);
+    std::cout << "Token class: VAR, Token value: " << yytext << std::endl;
 }
 
 "/*"                                                {
     char c = 0;
     int comment_level = 1;
 
-    printf ("Token class: OPEN_COMMENT\n");
+    std::cout << "Token class: OPEN_COMMENT" << std::endl;
 
     while (comment_level != 0) {
         if ((c = yyinput()) == '/') {
             if ((c = yyinput()) == '*') {
                 printf ("Token class: OPEN_COMMENT\n");
+                std::cout << "Token class: OPEN_COMMENT" << std::endl;
                 comment_level++;
                 continue;
             }
@@ -70,12 +71,14 @@ FALSE         [f][Aa][Ll][Ss][Ee]
         if (c == '*') {
             if ((c = yyinput()) == '/') {
                 printf ("Token class: CLOSE_COMMENT\n");
+                std::cout << "Token class: CLOSE_COMMENT" << std::endl;
                 comment_level--;
                 continue;
             }
         }
 
         if (c == EOF) {
+            //eof in comment
             break;
         }
     }
@@ -83,14 +86,14 @@ FALSE         [f][Aa][Ll][Ss][Ee]
 
 "--"                                                {
     char c = yyinput();
-    
+    std::cout << "Token class: OPEN_COMMENT" << std::endl;
     printf ("Token class: OPEN_COMMENT\n");
 
     while (c != '\n' && c != '\0') {
         c = yyinput();
     }
-
-    printf ("Token class: CLOSE_COMMENT\n");
+    
+    std::cout << "Token class: CLOSE_COMMENT" << std::endl;
 }
 
 [ \n\t]+                                            {}
