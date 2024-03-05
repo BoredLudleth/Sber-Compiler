@@ -3,14 +3,18 @@
 %{
 #include <iostream>
 #include "lex_funct.hpp"
-#include "error_codes.hpp"
+#include "settings.hpp"
+
+int rec_comment_num;
+
+char  string_buffer[MAX_STRING_LENGTH];
+char* string_pointer;
 %}
 
 DIGIT         [0-9]
 
 TYPE_ID       [A-Z][A-Za-z0-9_]*
 VAR           [a-z][A-Za-z0-9_]*
-STRING        ["][^\0"<<EOF>>]*["]
 
 ELSE          [Ee][Ll][Ss][Ee]
 IF            [Ii][Ff]
@@ -24,9 +28,39 @@ PRINTLN       [Pp][Rr][Ii][Nn][Tt][Ll][Nn]
 TRUE          [t][Rr][Uu][Ee]
 FALSE         [f][Aa][Ll][Ss][Ee]
 
+%x IN_COMMENT FOO_COMMENT STRING
+
 %%
-{STRING}                                            {
-    print_msg ("Token class: STRING, Token value: ", yytext);
+\"                                                  {
+    string_pointer = string_buffer;
+    BEGIN(STRING);
+}
+
+<STRING>{
+[^<<EOF>>\0\"]+ {
+    char* yptr = yytext;
+    while (*yptr) {
+        *string_pointer = *yptr;
+        string_pointer++;
+        yptr++;
+    }
+}
+
+<<EOF>> {
+    print_msg ("error::eof in string");
+    return ERROR_EOF_IN_STRING;
+}
+
+\0 {
+    print_msg ("error::null in string");
+    return ERROR_NULL_IN_STRING;
+}
+
+\" {
+    *string_pointer = '\0';
+    print_msg ("Token class: STRING, Token value: ", string_buffer);
+    BEGIN(INITIAL);
+}
 }
 
 {DIGIT}+                                            {
@@ -55,13 +89,51 @@ FALSE         [f][Aa][Ll][Ss][Ee]
 }
 
 "/*"                                                {
-    readAttachedComment ();
+          rec_comment_num = 1;        
+          BEGIN(IN_COMMENT);
+}
+
+<IN_COMMENT>{
+"*/"      {
+            rec_comment_num--;
+
+            if (rec_comment_num == 0) {
+                BEGIN(INITIAL);
+            }
+}
+
+[^*/<<EOF>>\0]+      // eat comment in chunks
+
+"*"+[^/]    // eat the lone star
+
+"/"+[^*]    //eat the lone slash
+
+"/*"    rec_comment_num++;
+
+<<EOF>> {
+    print_msg ("error::eof in comment");
+    return ERROR_EOF_IN_COMMENT;
+}
+
+\0 {
+    print_msg ("error::null in comment");
+    return ERROR_NULL_IN_COMMENT;
+}
 }
 
 "--"                                                {
-    readNotAttachedComment ();
+    BEGIN(FOO_COMMENT);
 }
 
-[ \n\t]+                                            {}
+<FOO_COMMENT>{
+[^<<EOF>>\n]+  // eat comment
+
+\n    BEGIN(INITIAL);
+
+<<EOF>>  BEGIN(INITIAL);
+
+}
+
+[ \n\t]+                                            // eat spaces
 
 %%

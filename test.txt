@@ -1,5 +1,7 @@
-Int64_t position = iF true then initial + rate *  /* что вершит /* судьбу человечества*/ незримый закон?*/60 elSe 0
---jojobizare
-"allongel"
+Int64_t position = iF true then initial + rate *  /* что вершит /* судьбу /* * человечества **/ */ */ незримый закон?*/60 elSe 0
+"allongelo"
+
+/* *COMMENT * */
 
 print (1.618)
+--jojobizare
